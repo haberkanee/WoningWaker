@@ -16,9 +16,10 @@ next-env.d.ts
 /playwright-report
 /test-results
 
-# env
+# env — alles behalve het voorbeeldbestand
 .env
-.env*.local
+.env.*
+!.env.example
 
 # prisma
 prisma/dev.db
@@ -33,3 +34,6 @@ npm-debug.log*
 .idea
 .vscode
 tsconfig.tsbuildinfo
+
+# ingebouwde database (embedded-postgres)
+/.postgres/
