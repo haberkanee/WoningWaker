@@ -1,0 +1,565 @@
+// WoningWaker — Prisma datamodel
+// Zie DESIGN.md §3 voor het overzicht.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  GRATIS
+  WAKER
+  WAKER_PLUS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+enum WoningType {
+  APPARTEMENT
+  EENGEZINSWONING
+  STUDIO
+  KAMER
+  BENEDENWONING
+  BOVENWONING
+  SENIORENWONING
+  ONBEKEND
+}
+
+// Verdeelmodellen — hoe een woning wordt toegewezen
+enum Verdeelmodel {
+  INSCHRIJFDUUR
+  LOTING
+  DIRECT_KANS
+  EERSTE_PASSENDE
+  JONGERENWONING
+  SENIORENWONING
+  LOKALE_VOORRANG
+  DOORSTROMING
+  TIJDELIJKE_HUUR
+  ONBEKEND
+}
+
+enum GeschiktheidStatus {
+  WAARSCHIJNLIJK_GESCHIKT
+  HANDMATIGE_CONTROLE
+  WAARSCHIJNLIJK_NIET_GESCHIKT
+}
+
+enum Kansindicatie {
+  ZEER_LAAG
+  LAAG
+  GEMIDDELD
+  HOOG
+  ONBEKEND
+}
+
+enum ApplicationStatus {
+  VOORBEREID // reactie voorbereid, nog niet ingediend door gebruiker
+  GEREAGEERD // gebruiker heeft definitief gereageerd op het platform
+  UITGENODIGD
+  BEZICHTIGING
+  AANBOD
+  AFGEWEZEN
+  INGETROKKEN
+  VERLOPEN
+}
+
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  TELEGRAM
+  DASHBOARD
+}
+
+enum NotificationType {
+  NIEUWE_MATCH
+  BIJNA_SLUITEN
+  ZOEKPUNTEN
+  INSCHRIJVING_VERLOOPT
+  DOCUMENT_VERLOOPT
+  BETALING
+  SYSTEEM
+}
+
+enum DocumentType {
+  INKOMENSVERKLARING
+  LOONSTROOK
+  JAAROPGAVE
+  BRP_UITTREKSEL
+  VERHUURDERSVERKLARING
+  IDENTITEITSBEWIJS
+  MEDEAANVRAGER
+}
+
+enum DocumentStatus {
+  ONTBREEKT
+  AANGEVRAAGD
+  AANWEZIG
+  VERLOPEN
+}
+
+enum RegistrationStatus {
+  ACTIEF
+  INACTIEF
+  ACTIE_NODIG
+}
+
+// ─── Auth.js ────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          Role      @default(USER)
+  plan          Plan      @default(GRATIS)
+  locale        String    @default("nl")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts              Account[]
+  sessions              Session[]
+  profile               Profile?
+  searchProfiles        SearchProfile[]
+  registrations         PlatformRegistration[]
+  matches               ListingMatch[]
+  favorites             Favorite[]
+  hidden                HiddenListing[]
+  notes                 ListingNote[]
+  applications          ApplicationLog[]
+  pointRules            SearchPointRule[]
+  pointPeriods          SearchPointPeriod[]
+  documents             DocumentChecklistItem[]
+  notifications         Notification[]
+  pushSubscriptions     PushSubscription[]
+  notificationPrefs     NotificationPreference[]
+  subscription          Subscription?
+  auditLogs             AuditLog[]
+  telegramChatId        String?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Profiel ─────────────────────────────────────────────────────────────
+
+model Profile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Formele situatie
+  brutoJaarinkomen   Int? // bruto jaarinkomen huishouden in hele euro's
+  huishoudgrootte    Int? // aantal personen
+  leeftijd           Int?
+  huidigeWoonplaats  String?
+
+  // Wensen
+  gewensteRegios     String[] @default([]) // regio-slugs, bv. ["rotterdam", "dordrecht"]
+  gewensteGemeenten  String[] @default([])
+  maxHuurprijs       Int? // euro per maand
+  minKamers          Int?
+  woningtypes        WoningType[] @default([])
+  liftVereist        Boolean  @default(false)
+  beganeGrondVereist Boolean  @default(false)
+  maxReisafstandKm   Int?
+
+  // Voorrang / doelgroep
+  lokaleBinding      String[] @default([]) // gemeenten met lokale binding
+  voorrangsredenen   String[] @default([]) // bv. ["medisch", "doorstromer", "mantelzorg"]
+  studerend          Boolean  @default(false)
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// ─── Zoekprofielen ───────────────────────────────────────────────────────
+
+model SearchProfile {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  naam           String
+  actief         Boolean  @default(true)
+
+  regios         String[] @default([])
+  gemeenten      String[] @default([])
+  maxHuurprijs   Int?
+  minHuurprijs   Int?
+  minKamers      Int?
+  minOppervlakte Int?
+  woningtypes    WoningType[]  @default([])
+  verdeelmodellen Verdeelmodel[] @default([])
+  alleenGeschikt Boolean  @default(false)
+  liftVereist    Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Platforminschrijvingen ──────────────────────────────────────────────
+
+model PlatformRegistration {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformSlug   String // matcht connector-slug, bv. "dak"
+  platformNaam   String
+  regio          String?
+  status         RegistrationStatus @default(ACTIEF)
+  inschrijfdatum DateTime?
+  verlengdatum   DateTime? // datum waarop inschrijving verlengd/betaald moet worden
+  inschrijfnummer String?
+  actieNodig     String?  // omschrijving van benodigde actie
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Woningaanbod ────────────────────────────────────────────────────────
+
+model Listing {
+  id             String   @id @default(cuid())
+  // Stabiele identiteit vanuit de connector (dedup)
+  platformSlug   String
+  externalId     String
+  bronUrl        String
+
+  plaats         String
+  wijk           String?
+  gemeente       String?
+  regio          String?
+  corporatie     String?
+
+  huurprijs      Int // euro per maand (kale huur)
+  servicekosten  Int      @default(0)
+  oppervlakte    Int? // m2
+  kamers         Int?
+  slaapkamers    Int?
+  woningtype     WoningType @default(ONBEKEND)
+  verdeelmodel   Verdeelmodel @default(ONBEKEND)
+  verdiepingen   Int?
+  heeftLift      Boolean?
+  beganeGrond    Boolean?
+
+  // Doelgroep / voorwaarden zoals gepubliceerd door het platform
+  minLeeftijd    Int?
+  maxLeeftijd    Int?
+  maxInkomen     Int? // grens huishoudinkomen
+  minInkomen     Int?
+  maxHuishoudgrootte Int?
+  minHuishoudgrootte Int?
+  lokaleBindingGemeente String?
+  doelgroep      String? // vrije tekst, bv. "senioren 55+"
+
+  gepubliceerdOp DateTime
+  sluitDatum     DateTime?
+
+  titel          String?
+  omschrijving   String?  @db.Text
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  matches        ListingMatch[]
+  favorites      Favorite[]
+  hidden         HiddenListing[]
+  notes          ListingNote[]
+  applications   ApplicationLog[]
+
+  @@unique([platformSlug, externalId])
+  @@index([regio])
+  @@index([sluitDatum])
+}
+
+// Per gebruiker+woning: de drie scores + status. Gecachet resultaat van de
+// domeinlaag zodat dashboards/lijsten snel zijn.
+model ListingMatch {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId          String
+  listing            Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  geschiktheidScore  Int // 0-100
+  geschiktheidStatus GeschiktheidStatus
+  woonwensScore      Int // 0-100
+  kansindicatie      Kansindicatie
+
+  // Uitleg: arrays van reden-objecten opgeslagen als JSON
+  geschiktheidRedenen Json
+  woonwensRedenen     Json
+  kansRedenen         Json
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+}
+
+model HiddenListing {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+}
+
+model ListingNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tekst     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, listingId])
+}
+
+// ─── Reactielogboek ──────────────────────────────────────────────────────
+
+model ApplicationLog {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId     String?
+  listing       Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  // Snapshot (blijft bewaard ook als listing verdwijnt)
+  woningTitel   String
+  platformSlug  String
+  regio         String?
+  verdeelmodel  Verdeelmodel @default(ONBEKEND)
+  geschiktheidScore Int?
+  woonwensScore Int?
+  kansindicatie Kansindicatie?
+
+  status        ApplicationStatus @default(VOORBEREID)
+  gevondenOp    DateTime @default(now())
+  gereageerdOp  DateTime?
+  positie       Int? // volgnummer/positie indien bekend
+  uitnodiging   Boolean  @default(false)
+  bezichtiging  Boolean  @default(false)
+  aanbod        Boolean  @default(false)
+  afwijzing     Boolean  @default(false)
+  notities      String?  @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── ZoekpuntWaker ───────────────────────────────────────────────────────
+
+model SearchPointRule {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  regio             String
+  reactiesPerMaand  Int      @default(1) // hoeveel passende reacties nodig zijn
+  // welke verdeelmodellen meetellen voor het doel
+  tellendeModellen  Verdeelmodel[] @default([])
+  actief            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  periods           SearchPointPeriod[]
+
+  @@unique([userId, regio])
+}
+
+model SearchPointPeriod {
+  id           String   @id @default(cuid())
+  ruleId       String
+  rule         SearchPointRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jaar         Int
+  maand        Int // 1-12
+  doel         Int
+  behaald      Int      @default(0)
+  deadline     DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([ruleId, jaar, maand])
+  @@index([userId])
+}
+
+// ─── WoningKlaar (documentchecklist) ─────────────────────────────────────
+
+model DocumentChecklistItem {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        DocumentType
+  status      DocumentStatus @default(ONTBREEKT)
+  verloopt    DateTime?
+  notitie     String?
+  voorMedeaanvrager Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, type, voorMedeaanvrager])
+}
+
+// ─── Meldingen ───────────────────────────────────────────────────────────
+
+model Notification {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       NotificationType
+  titel      String
+  body       String   @db.Text
+  url        String?
+  // dedup-sleutel om dubbele meldingen te voorkomen
+  dedupeKey  String
+  gelezen    Boolean  @default(false)
+  channels   NotificationChannel[] @default([])
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, gelezen])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model NotificationPreference {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type     NotificationType
+  channel  NotificationChannel
+  enabled  Boolean  @default(true)
+
+  @@unique([userId, type, channel])
+}
+
+// ─── Abonnement ──────────────────────────────────────────────────────────
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                 Plan     @default(GRATIS)
+  status               SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ─── Audit / connector-status ────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  actie      String
+  entiteit   String?
+  entiteitId String?
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([actie])
+}
+
+model ConnectorStatus {
+  id           String   @id @default(cuid())
+  platformSlug String   @unique
+  platformNaam String
+  gezond       Boolean  @default(true)
+  laatsteSync  DateTime?
+  laatsteFout  String?
+  aantalWoningen Int    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

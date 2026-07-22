@@ -1,0 +1,31 @@
+{
+  "name": "WoningWaker",
+  "short_name": "WoningWaker",
+  "description": "Sociale huurwoningen uit meerdere regio's en platforms op één plek — vinden, beoordelen en bewaken.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f0f7f6",
+  "theme_color": "#0f766e",
+  "lang": "nl",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Woningaanbod", "url": "/woningen" },
+    { "name": "Dashboard", "url": "/dashboard" },
+    { "name": "Zoekpunten", "url": "/zoekpunten" }
+  ]
+}

@@ -1,0 +1,35 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+
+# testing
+/coverage
+/playwright-report
+/test-results
+
+# env
+.env
+.env*.local
+
+# prisma
+prisma/dev.db
+prisma/migrations/dev/
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+.vercel
+.idea
+.vscode
+tsconfig.tsbuildinfo
