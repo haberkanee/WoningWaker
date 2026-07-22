@@ -67,6 +67,24 @@ npm run worker
 | Admin | `admin@woningwaker.nl`  | `Demo1234` |
 | User  | `demo@woningwaker.nl`   | `Demo1234` |
 
+## Online zetten (openbare URL)
+
+Wil je een echte, deelbare URL in plaats van alleen lokaal? Zie de volledige
+stap-voor-stap gids in **[`DEPLOY.md`](./DEPLOY.md)**.
+
+Kort samengevat (Vercel + gratis Neon-database):
+
+1. Maak een gratis PostgreSQL bij [Neon](https://neon.tech) en kopieer de
+   connection string.
+2. Importeer de repo op [vercel.com/new](https://vercel.com/new) en zet de env-vars
+   `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `CRON_SECRET`.
+3. Deploy. Vercel draait automatisch de database-migratie (`vercel-build`).
+4. Registreer met je `ADMIN_EMAIL`, ga naar `/admin` → **Sync connectors nu**.
+
+De meegeleverde `vercel.json` regelt de build en een dagelijkse connector-sync.
+Voor een langlopende server mét achtergrondworker: zie Route B (Docker) in
+`DEPLOY.md`.
+
 ## Environment variables
 
 Alle keys staan in [`.env.example`](./.env.example). **Kern** (verplicht):
