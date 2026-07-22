@@ -15,27 +15,48 @@ Next.js 14 (App Router) · TypeScript · React 18 · Tailwind + shadcn-stijl UI 
 PostgreSQL + Prisma · Auth.js · Zod · Redis + BullMQ · Web Push · Resend ·
 Telegram · Stripe · Vitest + Playwright · Docker Compose · PWA.
 
-## Snel starten (lokaal)
+## Snel starten (in de browser openen)
+
+**Geen Docker of database-installatie nodig.** Je hebt alleen
+[Node.js 20+](https://nodejs.org) op je computer nodig.
 
 ```bash
-# 1. Dependencies
 npm install
+npm run dev
+```
 
-# 2. Infra (Postgres + Redis)
-docker compose up -d db redis
+Open daarna **http://localhost:3000** in je browser. That's it.
 
-# 3. Environment
-cp .env.example .env
-#   Vul minimaal DATABASE_URL en AUTH_SECRET in.
-#   AUTH_SECRET genereren: openssl rand -base64 32
+`npm run dev` regelt alles automatisch: het start een ingebouwde PostgreSQL
+(via `embedded-postgres`, opgeslagen in `.postgres/`), zet het databaseschema
+klaar, laadt demo-data en start de app. De eerste keer duurt dit iets langer
+omdat de database wordt aangemaakt.
 
-# 4. Database + demo-data
-npm run db:push        # schema naar database
-npm run db:seed        # demo-gebruiker + testwoningen
+> Op Windows: gebruik dezelfde commando's in PowerShell of de terminal.
 
-# 5. Start
-npm run dev            # http://localhost:3000
-# (optioneel) achtergrondworker voor sync & verloopbewaking:
+### Productiemodus lokaal
+
+```bash
+npm run build
+npm run start:local    # bouwt + start op http://localhost:3000
+```
+
+### Eigen database gebruiken (optioneel)
+
+Wil je een eigen PostgreSQL (bijv. via Docker of een cloud-database)? Zet dan
+`DATABASE_URL` in een `.env`-bestand (zie `.env.example`); de ingebouwde database
+blijft dan uit. Met Docker:
+
+```bash
+docker compose up -d db redis   # Postgres + Redis
+cp .env.example .env            # zet DATABASE_URL aan
+npm run db:push && npm run db:seed
+npm run dev
+```
+
+Achtergrondworker (optioneel, voor sync & verloopbewaking, vereist Redis):
+
+```bash
 npm run worker
 ```
 
@@ -45,6 +66,24 @@ npm run worker
 |-------|-------------------------|------------|
 | Admin | `admin@woningwaker.nl`  | `Demo1234` |
 | User  | `demo@woningwaker.nl`   | `Demo1234` |
+
+## Online zetten (openbare URL)
+
+Wil je een echte, deelbare URL in plaats van alleen lokaal? Zie de volledige
+stap-voor-stap gids in **[`DEPLOY.md`](./DEPLOY.md)**.
+
+Kort samengevat (Vercel + gratis Neon-database):
+
+1. Maak een gratis PostgreSQL bij [Neon](https://neon.tech) en kopieer de
+   connection string.
+2. Importeer de repo op [vercel.com/new](https://vercel.com/new) en zet de env-vars
+   `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `CRON_SECRET`.
+3. Deploy. Vercel draait automatisch de database-migratie (`vercel-build`).
+4. Registreer met je `ADMIN_EMAIL`, ga naar `/admin` → **Sync connectors nu**.
+
+De meegeleverde `vercel.json` regelt de build en een dagelijkse connector-sync.
+Voor een langlopende server mét achtergrondworker: zie Route B (Docker) in
+`DEPLOY.md`.
 
 ## Environment variables
 

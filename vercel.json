@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run vercel-build",
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/connectors/sync",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/connectors/sync/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
