@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import {
-  vanPostmark, vanGeneriek, parseAlertEmail, platformVoorEmail, type InboundEmail,
+  vanPostmark, vanGeneriek, parseAlertEmail, platformVoorEmail, tokenUitAdres, type InboundEmail,
 } from "@/lib/inbound";
 import { upsertListing } from "@/lib/connectors/sync";
 import { recomputeMatchesForUser } from "@/lib/matching";
@@ -18,11 +18,16 @@ export const maxDuration = 60;
  * Beveiliging: ?key=<INBOUND_WEBHOOK_SECRET> in de webhook-URL.
  */
 export async function POST(req: Request) {
+  const url = new URL(req.url);
   const secret = process.env.INBOUND_WEBHOOK_SECRET;
-  const key = new URL(req.url).searchParams.get("key");
-  if (!secret || key !== secret) {
+  const key = url.searchParams.get("key");
+  // Een fout gedeeld geheim wordt geweigerd; het persoonlijke token is de
+  // eigenlijke sleutel (uniek en niet te raden), zodat de Gmail-methode zonder
+  // gedeeld geheim werkt.
+  if (secret && key && key !== secret) {
     return NextResponse.json({ error: "Niet toegestaan" }, { status: 403 });
   }
+  const tokenParam = url.searchParams.get("token") ?? undefined;
 
   // Payload lezen (JSON van Postmark/generiek, of form-encoded).
   let email: InboundEmail | null = null;
@@ -44,9 +49,9 @@ export async function POST(req: Request) {
   }
   if (!email) return NextResponse.json({ error: "Geen e-mail" }, { status: 400 });
 
-  // Gebruiker bepalen via het token.
-  const token = email.mailboxHash;
-  if (!token) return NextResponse.json({ error: "Geen token in adres" }, { status: 202 });
+  // Gebruiker bepalen via het token (query > mailboxHash > +adres).
+  const token = tokenParam || email.mailboxHash || tokenUitAdres(email.to);
+  if (!token) return NextResponse.json({ error: "Geen token" }, { status: 202 });
   const user = await prisma.user.findUnique({ where: { inboundToken: token }, select: { id: true } });
   if (!user) return NextResponse.json({ error: "Onbekend token" }, { status: 202 });
 

@@ -114,21 +114,29 @@ bots). In plaats daarvan stuur je de **officiële e-mailalerts** van de platform
 door; wij zetten ze om in echte woningen met de echte advertentielink en foto.
 Standaard staat demodata **uit** (`DEMO_DATA` niet gezet).
 
-**Eenmalige setup (jij, als beheerder):**
-1. Maak een gratis account bij een inbound-e-mailprovider, bv.
-   [Postmark](https://postmarkapp.com) → *Servers* → *Inbound*. Je krijgt een
-   inbound-adres zoals `abc123@inbound.postmarkapp.com`.
-2. Zet in Postmark de **Inbound Webhook URL** op:
-   `https://<jouw-vercel-url>/api/inbound/email?key=<INBOUND_WEBHOOK_SECRET>`
-3. Zet in Vercel de variabelen:
-   - `INBOUND_BASE_ADDRESS` = `abc123@inbound.postmarkapp.com`
-   - `INBOUND_WEBHOOK_SECRET` = een lange willekeurige string (moet gelijk zijn aan de `?key=` hierboven)
-   → **Redeploy**.
+### Methode 1 — Gmail (aanbevolen, werkt met een gewoon Gmail-account)
 
-**Per gebruiker (in de app):** ga naar **Koppelingen**. Daar staat een persoonlijk
-doorstuuradres (`abc123+<jouwtoken>@inbound.postmarkapp.com`). Zet bij een
-woningplatform de e-mailalerts aan en stel in je mailbox een doorstuurregel in
-naar dat adres. Elke alert verschijnt binnen enkele seconden als echte woning.
+**Geen extra account, domein of env-variabele nodig** — alleen je gedeployde app.
+Elke gebruiker regelt het zelf in de app onder **Koppelingen**:
+
+1. Gmail-filter: label de woningalerts (bijv. van `@woonnetrijnmond.nl`) met het
+   label **WoningWaker**.
+2. Plak het kant-en-klare **Google Apps Script** (staat met je persoonlijke
+   webhook-URL al ingevuld op de Koppelingen-pagina) op
+   [script.google.com](https://script.google.com).
+3. Zet een tijdgestuurde trigger (elke 5–10 min). Klaar.
+
+De beveiliging loopt via je **persoonlijke token** in de webhook-URL (uniek en
+geheim) — je hoeft dus geen gedeeld geheim in te stellen.
+
+### Methode 2 — Inbound-provider (Postmark/CloudMailin, optioneel)
+
+Wil je liever een doorstuuradres i.p.v. een script? Gebruik een inbound-provider:
+1. Maak een inbound-adres aan (bv. [CloudMailin](https://www.cloudmailin.com) —
+   accepteert Gmail-signups — of Postmark met een zakelijk e-mailadres).
+2. Zet de webhook op `https://<jouw-vercel-url>/api/inbound/email?key=<geheim>`.
+3. Zet in Vercel `INBOUND_BASE_ADDRESS` en `INBOUND_WEBHOOK_SECRET` → **Redeploy**.
+   In de app verschijnt dan per gebruiker een `+token`-doorstuuradres.
 
 > Wil je de app eerst met voorbeeldwoningen bekijken? Zet tijdelijk
 > `DEMO_DATA=true` in Vercel en klik in `/admin` op **Sync connectors nu**.
