@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { PLANS, planConfig } from "@/lib/plans";
+import { PLANS, planConfig, BETAALD_ACTIEF } from "@/lib/plans";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,20 @@ export default async function InstellingenPage({
         </CardContent></Card>
       )}
 
-      {/* Abonnement */}
+      {/* Abonnement — alleen tonen als betaalde pakketten actief zijn */}
+      {!BETAALD_ACTIEF ? (
+        <Card className="border-success/30 bg-success/5">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 py-5">
+            <div>
+              <p className="font-semibold">Alle functies zijn nu gratis 🎉</p>
+              <p className="text-sm text-muted-foreground">
+                WoningWaker is momenteel volledig gratis — geen pakketten, geen betaling.
+              </p>
+            </div>
+            <Badge variant="success">Gratis</Badge>
+          </CardContent>
+        </Card>
+      ) : (
       <Card>
         <CardHeader>
           <CardTitle>Abonnement</CardTitle>
@@ -85,6 +98,7 @@ export default async function InstellingenPage({
           </CardContent>
         )}
       </Card>
+      )}
 
       {/* Notificatievoorkeuren */}
       <Card>
@@ -101,10 +115,10 @@ export default async function InstellingenPage({
       </Card>
 
       {/* Telegram */}
-      {planConfig(dbUser?.plan ?? "GRATIS").can.telegram && (
+      {(!BETAALD_ACTIEF || planConfig(dbUser?.plan ?? "GRATIS").can.telegram) && (
         <Card>
           <CardHeader><CardTitle>Telegram</CardTitle>
-            <CardDescription>Koppel je Telegram chat-ID voor meldingen (Waker Plus).</CardDescription>
+            <CardDescription>Koppel je Telegram chat-ID voor meldingen{BETAALD_ACTIEF ? " (Waker Plus)" : ""}.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={saveTelegram} className="flex items-end gap-2">

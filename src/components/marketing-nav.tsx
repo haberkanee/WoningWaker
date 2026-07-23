@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BETAALD_ACTIEF } from "@/lib/plans";
 
 export function MarketingNav() {
   return (
@@ -13,7 +14,9 @@ export function MarketingNav() {
         </Link>
         <nav className="hidden items-center gap-6 text-sm md:flex">
           <Link href="/#functies" className="text-muted-foreground hover:text-foreground">Functies</Link>
-          <Link href="/prijzen" className="text-muted-foreground hover:text-foreground">Prijzen</Link>
+          {BETAALD_ACTIEF && (
+            <Link href="/prijzen" className="text-muted-foreground hover:text-foreground">Prijzen</Link>
+          )}
           <Link href="/status" className="text-muted-foreground hover:text-foreground">Status</Link>
         </nav>
         <div className="flex items-center gap-2">
@@ -35,7 +38,7 @@ export function MarketingFooter() {
       <div className="container flex flex-col gap-4 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
         <p>© {new Date().getFullYear()} WoningWaker. Geen woningplatform, maar je assistent.</p>
         <nav className="flex flex-wrap gap-4">
-          <Link href="/prijzen" className="hover:text-foreground">Prijzen</Link>
+          {BETAALD_ACTIEF && <Link href="/prijzen" className="hover:text-foreground">Prijzen</Link>}
           <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
           <Link href="/voorwaarden" className="hover:text-foreground">Voorwaarden</Link>
           <Link href="/status" className="hover:text-foreground">Platformstatus</Link>

@@ -37,6 +37,7 @@ export interface NormalizedListing {
   sluitDatum?: Date | null;
   titel?: string | null;
   omschrijving?: string | null;
+  fotoUrl?: string | null; // echte woningfoto van het platform, indien beschikbaar
 }
 
 export interface ConnectorResult {

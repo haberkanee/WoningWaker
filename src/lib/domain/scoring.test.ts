@@ -38,6 +38,7 @@ function listing(overrides: Partial<ListingInput> = {}): ListingInput {
     sluitDatum: new Date(Date.now() + 86_400_000),
     titel: "Test",
     omschrijving: null,
+    fotoUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,

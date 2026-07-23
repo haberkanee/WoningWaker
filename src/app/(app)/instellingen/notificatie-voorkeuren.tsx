@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import type { NotificationChannel, NotificationType, Plan } from "@prisma/client";
 import { toggleNotificationPref } from "./actions";
-import { planConfig } from "@/lib/plans";
+import { planConfig, BETAALD_ACTIEF } from "@/lib/plans";
 
 const TYPES: [NotificationType, string][] = [
   ["NIEUWE_MATCH", "Nieuwe matches"],
@@ -36,6 +36,7 @@ export function NotificatieVoorkeuren({
   };
 
   const kanaalBeschikbaar = (channel: NotificationChannel) => {
+    if (!BETAALD_ACTIEF) return true; // gratis-modus: alle kanalen vrij
     if (channel === "PUSH") return cfg.can.pushMeldingen;
     if (channel === "TELEGRAM") return cfg.can.telegram;
     return true;

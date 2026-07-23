@@ -4,12 +4,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MarketingNav, MarketingFooter } from "@/components/marketing-nav";
-import { PLANS } from "@/lib/plans";
+import { PLANS, BETAALD_ACTIEF } from "@/lib/plans";
 
-export const metadata: Metadata = { title: "Prijzen" };
+export const metadata: Metadata = { title: BETAALD_ACTIEF ? "Prijzen" : "Gratis" };
 
 export default function PrijzenPage() {
   const plans = [PLANS.GRATIS, PLANS.WAKER, PLANS.WAKER_PLUS];
+
+  if (!BETAALD_ACTIEF) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <MarketingNav />
+        <main className="container flex flex-1 flex-col items-center justify-center py-24 text-center">
+          <Badge className="mb-4">Nu volledig gratis</Badge>
+          <h1 className="text-4xl font-bold">Alles is nu gratis</h1>
+          <p className="mt-4 max-w-md text-muted-foreground">
+            WoningWaker is momenteel volledig gratis te gebruiken — alle functies,
+            alle regio's, geen betaling. Maak gewoon een account aan en begin.
+          </p>
+          <Button asChild size="lg" className="mt-8">
+            <Link href="/registreren">Gratis account maken</Link>
+          </Button>
+        </main>
+        <MarketingFooter />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <MarketingNav />

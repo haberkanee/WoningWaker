@@ -27,10 +27,12 @@ export function AppNav({
   isAdmin,
   plan,
   ongelezen,
+  betaaldActief = false,
 }: {
   isAdmin: boolean;
   plan: string;
   ongelezen: number;
+  betaaldActief?: boolean;
 }) {
   const pathname = usePathname();
   return (
@@ -41,7 +43,9 @@ export function AppNav({
         </span>
         <div>
           <p className="font-bold leading-tight">WoningWaker</p>
-          <Badge variant="secondary" className="mt-0.5 text-[10px]">{planLabel(plan)}</Badge>
+          <Badge variant="secondary" className="mt-0.5 text-[10px]">
+            {betaaldActief ? planLabel(plan) : "Gratis"}
+          </Badge>
         </div>
       </div>
 

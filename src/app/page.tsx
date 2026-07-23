@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MarketingNav, MarketingFooter } from "@/components/marketing-nav";
 import { HERO_IMAGE, HEADER_IMAGES } from "@/lib/images";
 import { REGIOS } from "@/lib/regios";
+import { BETAALD_ACTIEF } from "@/lib/plans";
 import {
   Home, ShieldCheck, Sparkles, Target, ClipboardList, Bell,
   ArrowRight, CheckCircle2, MapPin,
@@ -39,22 +40,24 @@ export default function LandingPage() {
           <div className="container relative py-24 md:py-32">
             <div className="max-w-2xl text-white">
               <Badge className="mb-5 border-white/20 bg-white/10 text-white backdrop-blur">
-                Sociale huur, slim geregeld
+                Nu volledig gratis
               </Badge>
               <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
                 Jouw sociale huurwoning, eindelijk overzichtelijk
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/85">
-                Woonbot vindt advertenties. <strong className="text-white">WoningWaker begrijpt
-                het volledige sociale-huurproces:</strong> welke woning bij je past, waar je de
-                beste kansen hebt en wat je vandaag moet doen.
+                <strong className="text-white">WoningWaker begrijpt het volledige
+                sociale-huurproces:</strong> welke woning bij je past, waar je de beste
+                kansen hebt en wat je vandaag moet doen — alles op één plek.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild size="lg" variant="gold">
                   <Link href="/registreren">Gratis starten <ArrowRight className="h-4 w-4" /></Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/20">
-                  <Link href="/prijzen">Bekijk de pakketten</Link>
+                  <Link href={BETAALD_ACTIEF ? "/prijzen" : "/#functies"}>
+                    {BETAALD_ACTIEF ? "Bekijk de pakketten" : "Bekijk de functies"}
+                  </Link>
                 </Button>
               </div>
               <p className="mt-5 flex items-center gap-2 text-sm text-white/70">
@@ -174,7 +177,7 @@ export default function LandingPage() {
           <div className="container flex flex-col items-center gap-6 py-16 text-center">
             <h2 className="text-3xl font-bold sm:text-4xl">Begin vandaag nog</h2>
             <p className="max-w-md text-primary-foreground/80">
-              Gratis in één regio. Upgrade wanneer je wilt. Geen verplichtingen.
+              Nu volledig gratis. Geen pakketten, geen betaling, geen verplichtingen.
             </p>
             <Button asChild size="lg" variant="gold">
               <Link href="/registreren">Maak een gratis account <ArrowRight className="h-4 w-4" /></Link>

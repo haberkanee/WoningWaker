@@ -311,6 +311,7 @@ model Listing {
 
   titel          String?
   omschrijving   String?  @db.Text
+  fotoUrl        String? // echte woningfoto vanuit de connector/feed
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
