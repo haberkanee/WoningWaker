@@ -74,7 +74,7 @@ export function createJsonFeedConnector(opts?: {
 }): PlatformConnector {
   return {
     slug: opts?.slug ?? "json-feed",
-    naam: opts?.naam ?? "JSON-feed (demo)",
+    naam: opts?.naam ?? "Woonmatch",
     bron: "feed",
     regios: opts?.regios ?? ["noord-holland-noord"],
     async fetchListings(): Promise<ConnectorResult> {

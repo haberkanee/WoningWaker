@@ -67,7 +67,7 @@ export async function syncAllConnectors(): Promise<SyncResultaat[]> {
   return resultaten;
 }
 
-async function upsertListing(platformSlug: string, l: NormalizedListing) {
+export async function upsertListing(platformSlug: string, l: NormalizedListing) {
   const data = {
     bronUrl: l.bronUrl,
     plaats: l.plaats,
@@ -97,6 +97,7 @@ async function upsertListing(platformSlug: string, l: NormalizedListing) {
     sluitDatum: l.sluitDatum ?? null,
     titel: l.titel ?? null,
     omschrijving: l.omschrijving ?? null,
+    fotoUrl: l.fotoUrl ?? null,
   } as const;
 
   await prisma.listing.upsert({

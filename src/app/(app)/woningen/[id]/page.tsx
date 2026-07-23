@@ -12,6 +12,7 @@ import { verdeelmodelInfo } from "@/lib/domain/verdeelmodellen";
 import { DISCLAIMER, type Reden } from "@/lib/domain/types";
 import { euro, datum, tijdTot } from "@/lib/utils";
 import { regioNaam } from "@/lib/regios";
+import { woningFoto } from "@/lib/images";
 import { bevestigDefinitiefGereageerd } from "./actions";
 
 export const metadata: Metadata = { title: "Woningdetails" };
@@ -48,6 +49,12 @@ export default async function WoningDetailPage({ params }: { params: { id: strin
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          {/* Foto */}
+          <div
+            className="bg-hero-fallback h-56 w-full rounded-2xl bg-cover bg-center shadow-sm sm:h-72"
+            style={{ backgroundImage: `url('${listing.fotoUrl ?? woningFoto(listing.woningtype)}')` }}
+            aria-hidden
+          />
           {/* Kop */}
           <Card>
             <CardHeader>

@@ -46,22 +46,15 @@ staat (bijv. `main`, of de feature-branch). Vercel deployt vanaf GitHub.
 4. Klik **Deploy** en wacht tot de build klaar is. Je krijgt een URL zoals
    `https://woningwaker-xxxx.vercel.app`.
 
-### Stap 4 — Vul de eerste data
+### Stap 4 — Account + data
 
-Je database is nu leeg. Twee opties:
-
-**Optie 1 — via de app (aanbevolen):**
 1. Ga naar `https://<jouw-url>/registreren` en registreer met hetzelfde e-mailadres
    als `ADMIN_EMAIL`. Je wordt automatisch admin.
-2. Ga naar `/admin` → klik **Sync connectors nu**. De demo-woningen worden geladen
-   en matches berekend.
-
-**Optie 2 — demo-data seeden vanaf je eigen computer:**
-```bash
-# éénmalig, met de productie-DATABASE_URL:
-DATABASE_URL="postgresql://...neon..." npm run db:seed
-```
-Dit maakt een admin- en demo-account aan (`Demo1234`) en laadt testwoningen.
+2. **Echte woningen**: stel de e-mailkoppeling in (zie *Echte woningen via
+   e-mailkoppeling* hieronder) en stuur je woningalerts door. Standaard staat
+   demodata uit, dus het aanbod is leeg tot de eerste alert binnenkomt.
+3. **Even bekijken met voorbeelden?** Zet `DEMO_DATA=true` in Vercel, redeploy,
+   en klik in `/admin` op **Sync connectors nu** voor voorbeeldwoningen.
 
 ### Stap 5 — (optioneel) Automatische sync
 
@@ -85,6 +78,8 @@ betreffende functie is uit.
 | Pushmeldingen | `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` — genereer met `npx web-push generate-vapid-keys` |
 | E-mail (Resend) | `RESEND_API_KEY`, `EMAIL_FROM` |
 | Telegram | `TELEGRAM_BOT_TOKEN` |
+| Echte data via e-mail | `INBOUND_BASE_ADDRESS`, `INBOUND_WEBHOOK_SECRET` |
+| Demodata tonen (optioneel) | `DEMO_DATA=true` |
 | Betalingen (Mollie, aanbevolen) | `MOLLIE_API_KEY` |
 | Betalingen (Stripe, alternatief) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_WAKER`, `STRIPE_PRICE_WAKER_PLUS` |
 
@@ -111,6 +106,40 @@ Voeg variabelen toe via **Vercel → Project → Settings → Environment Variab
 klik daarna **Redeploy**.
 
 ---
+
+## Echte woningen via e-mailkoppeling (aanbevolen bron)
+
+WoningWaker haalt zelf niets van de platforms af (dat mag niet en ze blokkeren
+bots). In plaats daarvan stuur je de **officiële e-mailalerts** van de platforms
+door; wij zetten ze om in echte woningen met de echte advertentielink en foto.
+Standaard staat demodata **uit** (`DEMO_DATA` niet gezet).
+
+### Methode 1 — Gmail (aanbevolen, werkt met een gewoon Gmail-account)
+
+**Geen extra account, domein of env-variabele nodig** — alleen je gedeployde app.
+Elke gebruiker regelt het zelf in de app onder **Koppelingen**:
+
+1. Gmail-filter: label de woningalerts (bijv. van `@woonnetrijnmond.nl`) met het
+   label **WoningWaker**.
+2. Plak het kant-en-klare **Google Apps Script** (staat met je persoonlijke
+   webhook-URL al ingevuld op de Koppelingen-pagina) op
+   [script.google.com](https://script.google.com).
+3. Zet een tijdgestuurde trigger (elke 5–10 min). Klaar.
+
+De beveiliging loopt via je **persoonlijke token** in de webhook-URL (uniek en
+geheim) — je hoeft dus geen gedeeld geheim in te stellen.
+
+### Methode 2 — Inbound-provider (Postmark/CloudMailin, optioneel)
+
+Wil je liever een doorstuuradres i.p.v. een script? Gebruik een inbound-provider:
+1. Maak een inbound-adres aan (bv. [CloudMailin](https://www.cloudmailin.com) —
+   accepteert Gmail-signups — of Postmark met een zakelijk e-mailadres).
+2. Zet de webhook op `https://<jouw-vercel-url>/api/inbound/email?key=<geheim>`.
+3. Zet in Vercel `INBOUND_BASE_ADDRESS` en `INBOUND_WEBHOOK_SECRET` → **Redeploy**.
+   In de app verschijnt dan per gebruiker een `+token`-doorstuuradres.
+
+> Wil je de app eerst met voorbeeldwoningen bekijken? Zet tijdelijk
+> `DEMO_DATA=true` in Vercel en klik in `/admin` op **Sync connectors nu**.
 
 ## Route B — Render / Railway / eigen server (Docker)
 

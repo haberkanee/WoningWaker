@@ -1,6 +1,7 @@
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { AppNav } from "@/components/app-nav";
+import { BETAALD_ACTIEF } from "@/lib/plans";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
@@ -11,7 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r bg-card md:block">
-        <AppNav isAdmin={user.role === "ADMIN"} plan={user.plan} ongelezen={ongelezen} />
+        <AppNav isAdmin={user.role === "ADMIN"} plan={user.plan} ongelezen={ongelezen} betaaldActief={BETAALD_ACTIEF} />
       </aside>
       <div className="flex-1">
         {/* Mobiele topbalk */}

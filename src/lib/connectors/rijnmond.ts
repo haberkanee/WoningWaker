@@ -7,7 +7,7 @@ import { RIJNMOND_TESTDATA } from "./testdata";
  */
 export const rijnmondConnector: PlatformConnector = {
   slug: "rijnmond",
-  naam: "Woonnet Rijnmond (demo)",
+  naam: "Woonnet Rijnmond",
   bron: "demo",
   regios: ["rotterdam"],
   async fetchListings(): Promise<ConnectorResult> {

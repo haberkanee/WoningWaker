@@ -8,7 +8,7 @@ import { DAK_TESTDATA } from "./testdata";
  */
 export const dakConnector: PlatformConnector = {
   slug: "dak",
-  naam: "Mijn DAK (demo)",
+  naam: "Mijn DAK (Woonkeus Drechtsteden)",
   bron: "demo",
   regios: ["drechtsteden"],
   async fetchListings(): Promise<ConnectorResult> {

@@ -6,6 +6,8 @@ import { ensureUserData } from "@/lib/matching";
 import { ListingCard } from "@/components/listing-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
 import { REGIOS } from "@/lib/regios";
 import { PageHeader } from "@/components/page-header";
 import { HEADER_IMAGES } from "@/lib/images";
@@ -38,6 +40,33 @@ export default async function WoningenPage({ searchParams }: { searchParams: SP 
 
   const favSet = new Set(favorites.map((f) => f.listingId));
   const hiddenSet = new Set(hidden.map((h) => h.listingId));
+
+  // Nog geen enkele woning binnen → begeleiding naar de e-mailkoppeling.
+  if (matchesRaw.length === 0) {
+    return (
+      <div className="space-y-6">
+        <PageHeader titel="Woningaanbod" ondertitel="Nog geen woningen binnen." image={HEADER_IMAGES.woningen} />
+        <Card>
+          <CardContent className="flex flex-col items-center gap-4 py-14 text-center">
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+              <Mail className="h-7 w-7" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold">Koppel je e-mailalerts voor echte woningen</h2>
+              <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
+                WoningWaker toont echte woningen zodra je de officiële alerts van de
+                woningplatforms doorstuurt naar je persoonlijke adres. Zo krijg je
+                echte advertenties met scores — zonder demo.
+              </p>
+            </div>
+            <Button asChild>
+              <Link href="/koppelingen">Koppeling instellen</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   let items = matchesRaw.filter((m) => !hiddenSet.has(m.listingId));
 

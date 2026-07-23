@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   LayoutDashboard, Home, User, Search, Target, ClipboardList,
-  FileCheck2, Bell, History, Settings, Shield, LogOut,
+  FileCheck2, Bell, History, Settings, Shield, LogOut, Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/woningen", label: "Woningaanbod", icon: Home },
+  { href: "/koppelingen", label: "Koppelingen", icon: Mail },
   { href: "/zoekprofielen", label: "Zoekprofielen", icon: Search },
   { href: "/zoekpunten", label: "ZoekpuntWaker", icon: Target },
   { href: "/inschrijvingen", label: "Inschrijvingen", icon: ClipboardList },
@@ -27,10 +28,12 @@ export function AppNav({
   isAdmin,
   plan,
   ongelezen,
+  betaaldActief = false,
 }: {
   isAdmin: boolean;
   plan: string;
   ongelezen: number;
+  betaaldActief?: boolean;
 }) {
   const pathname = usePathname();
   return (
@@ -41,7 +44,9 @@ export function AppNav({
         </span>
         <div>
           <p className="font-bold leading-tight">WoningWaker</p>
-          <Badge variant="secondary" className="mt-0.5 text-[10px]">{planLabel(plan)}</Badge>
+          <Badge variant="secondary" className="mt-0.5 text-[10px]">
+            {betaaldActief ? planLabel(plan) : "Gratis"}
+          </Badge>
         </div>
       </div>
 

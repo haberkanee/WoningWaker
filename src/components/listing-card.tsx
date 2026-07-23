@@ -22,6 +22,7 @@ export function ListingCard({
   const vm = verdeelmodelInfo(listing.verdeelmodel);
   const favAction = toggleFavorite.bind(null, listing.id);
   const hideAction = toggleHidden.bind(null, listing.id);
+  const foto = listing.fotoUrl ?? woningFoto(listing.woningtype);
 
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-md sm:flex">
@@ -29,7 +30,7 @@ export function ListingCard({
       <Link
         href={`/woningen/${listing.id}`}
         className="bg-hero-fallback relative block h-40 shrink-0 bg-cover bg-center sm:h-auto sm:w-52"
-        style={{ backgroundImage: `linear-gradient(120deg, hsl(214 48% 18% / 0.15), transparent), url('${woningFoto(listing.woningtype)}')` }}
+        style={{ backgroundImage: `linear-gradient(120deg, hsl(214 48% 18% / 0.15), transparent), url('${foto}')` }}
         aria-hidden
       >
         <span className="absolute left-2 top-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-semibold text-foreground shadow-sm">

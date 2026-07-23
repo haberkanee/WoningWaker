@@ -155,6 +155,8 @@ model User {
   subscription          Subscription?
   auditLogs             AuditLog[]
   telegramChatId        String?
+  // Persoonlijk token voor de e-mailkoppeling (doorstuuradres met +token)
+  inboundToken          String?  @unique
 }
 
 model Account {
@@ -311,6 +313,7 @@ model Listing {
 
   titel          String?
   omschrijving   String?  @db.Text
+  fotoUrl        String? // echte woningfoto vanuit de connector/feed
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

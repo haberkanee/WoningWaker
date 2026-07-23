@@ -71,7 +71,7 @@ export function parseEmail(email: InboundEmail): NormalizedListing | null {
 export function createEmailConnector(mails: InboundEmail[] = [VOORBEELD_MAIL]): PlatformConnector {
   return {
     slug: "email",
-    naam: "E-mailalerts (demo)",
+    naam: "E-mailalerts",
     bron: "email",
     regios: [],
     async fetchListings(): Promise<ConnectorResult> {

@@ -1,5 +1,12 @@
 import type { Plan } from "@prisma/client";
 
+/**
+ * Betaalde pakketten (tijdelijk) uit. Zolang dit `false` is, is WoningWaker
+ * volledig gratis: alle functies zijn vrij en de pakketten/prijzen worden niet
+ * getoond. Zet op `true` (of env BETAALD_ACTIEF=true) om abonnementen te activeren.
+ */
+export const BETAALD_ACTIEF = process.env.BETAALD_ACTIEF === "true";
+
 export interface PlanFeature {
   tekst: string;
 }
@@ -106,5 +113,7 @@ export function planConfig(plan: Plan): PlanConfig {
 }
 
 export function can(plan: Plan, feature: keyof PlanConfig["can"]): boolean {
+  // Gratis-modus: alle functies vrij zolang betaalde pakketten uit staan.
+  if (!BETAALD_ACTIEF) return true;
   return planConfig(plan).can[feature];
 }
