@@ -79,7 +79,8 @@ Kort samengevat (Vercel + gratis Neon-database):
 2. Importeer de repo op [vercel.com/new](https://vercel.com/new) en zet de env-vars
    `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_EMAIL`, `CRON_SECRET`.
 3. Deploy. Vercel draait automatisch de database-migratie (`vercel-build`).
-4. Registreer met je `ADMIN_EMAIL`, ga naar `/admin` → **Sync connectors nu**.
+4. Registreer met je `ADMIN_EMAIL`. Voor **echte woningen** stel je de
+   e-mailkoppeling in (zie `DEPLOY.md`); demodata staat standaard uit.
 
 De meegeleverde `vercel.json` regelt de build en een dagelijkse connector-sync.
 Voor een langlopende server mét achtergrondworker: zie Route B (Docker) in

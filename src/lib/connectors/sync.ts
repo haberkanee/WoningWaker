@@ -67,7 +67,7 @@ export async function syncAllConnectors(): Promise<SyncResultaat[]> {
   return resultaten;
 }
 
-async function upsertListing(platformSlug: string, l: NormalizedListing) {
+export async function upsertListing(platformSlug: string, l: NormalizedListing) {
   const data = {
     bronUrl: l.bronUrl,
     plaats: l.plaats,

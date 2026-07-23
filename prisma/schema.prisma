@@ -155,6 +155,8 @@ model User {
   subscription          Subscription?
   auditLogs             AuditLog[]
   telegramChatId        String?
+  // Persoonlijk token voor de e-mailkoppeling (doorstuuradres met +token)
+  inboundToken          String?  @unique
 }
 
 model Account {
