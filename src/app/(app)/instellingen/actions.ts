@@ -7,6 +7,9 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { audit } from "@/lib/audit";
 import { getStripe, priceIdVoorPlan } from "@/lib/stripe";
+import {
+  mollieEnabled, createCustomer, createFirstPayment, cancelSubscription as mollieCancel,
+} from "@/lib/mollie";
 import type { NotificationChannel, NotificationType, Plan } from "@prisma/client";
 
 const APP_URL = process.env.APP_URL ?? "http://localhost:3000";
@@ -19,6 +22,29 @@ export async function upgradePlan(formData: FormData) {
   const user = await requireUser();
   const plan = String(formData.get("plan")) as Plan;
   if (plan !== "WAKER" && plan !== "WAKER_PLUS" && plan !== "GRATIS") return;
+
+  // ── Mollie (voorkeur voor NL: iDEAL + incasso) ──────────────────────────
+  if (mollieEnabled() && plan !== "GRATIS") {
+    const sub = await prisma.subscription.findUnique({ where: { userId: user.id } });
+    let customerId = sub?.mollieCustomerId ?? undefined;
+    if (!customerId) {
+      customerId = await createCustomer(user.name ?? "WoningWaker-gebruiker", user.email ?? "");
+      await prisma.subscription.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id, provider: "mollie", mollieCustomerId: customerId },
+        update: { provider: "mollie", mollieCustomerId: customerId },
+      });
+    }
+    const checkoutUrl = await createFirstPayment({
+      customerId,
+      plan,
+      userId: user.id,
+      redirectUrl: `${APP_URL}/instellingen?betaling=controle`,
+      webhookUrl: `${APP_URL}/api/mollie/webhook`,
+    });
+    await audit({ userId: user.id, actie: "betaling.gestart", metadata: { provider: "mollie", plan } });
+    redirect(checkoutUrl);
+  }
 
   const stripe = getStripe();
   const priceId = priceIdVoorPlan(plan);
@@ -54,6 +80,26 @@ export async function upgradePlan(formData: FormData) {
     update: { plan, status: "ACTIVE" },
   });
   await audit({ userId: user.id, actie: "plan.gewijzigd", metadata: { plan, modus: "demo" } });
+  revalidatePath("/instellingen");
+}
+
+/** Zegt een lopend Mollie-abonnement op; het plan valt terug naar Gratis. */
+export async function opzeggenAbonnement(): Promise<void> {
+  const user = await requireUser();
+  const sub = await prisma.subscription.findUnique({ where: { userId: user.id } });
+  if (sub?.provider === "mollie" && sub.mollieCustomerId && sub.mollieSubscriptionId) {
+    try {
+      await mollieCancel(sub.mollieCustomerId, sub.mollieSubscriptionId);
+    } catch {
+      /* al opgezegd of onbereikbaar */
+    }
+  }
+  await prisma.subscription.update({
+    where: { userId: user.id },
+    data: { plan: "GRATIS", status: "CANCELED", mollieSubscriptionId: null },
+  });
+  await prisma.user.update({ where: { id: user.id }, data: { plan: "GRATIS" } });
+  await audit({ userId: user.id, actie: "abonnement.opgezegd" });
   revalidatePath("/instellingen");
 }
 

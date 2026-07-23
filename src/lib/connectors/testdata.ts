@@ -13,7 +13,7 @@ function uren(offset: number): Date {
 export const DAK_TESTDATA: NormalizedListing[] = [
   {
     externalId: "dak-1001",
-    bronUrl: "https://demo.mijndak.nl/woning/1001",
+    bronUrl: "https://woonkeus.mijndak.nl/?ref=1001",
     plaats: "Dordrecht",
     wijk: "Krispijn",
     gemeente: "Dordrecht",
@@ -38,7 +38,7 @@ export const DAK_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "dak-1002",
-    bronUrl: "https://demo.mijndak.nl/woning/1002",
+    bronUrl: "https://woonkeus.mijndak.nl/?ref=1002",
     plaats: "Zwijndrecht",
     wijk: "Centrum",
     gemeente: "Zwijndrecht",
@@ -61,7 +61,7 @@ export const DAK_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "dak-1003",
-    bronUrl: "https://demo.mijndak.nl/woning/1003",
+    bronUrl: "https://woonkeus.mijndak.nl/?ref=1003",
     plaats: "Dordrecht",
     wijk: "Sterrenburg",
     gemeente: "Dordrecht",
@@ -86,7 +86,7 @@ export const DAK_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "dak-1004",
-    bronUrl: "https://demo.mijndak.nl/woning/1004",
+    bronUrl: "https://woonkeus.mijndak.nl/?ref=1004",
     plaats: "Papendrecht",
     wijk: "Wilgendonk",
     gemeente: "Papendrecht",
@@ -116,7 +116,7 @@ export const DAK_TESTDATA: NormalizedListing[] = [
 export const RIJNMOND_TESTDATA: NormalizedListing[] = [
   {
     externalId: "rijnmond-2001",
-    bronUrl: "https://demo.woonnetrijnmond.nl/aanbod/2001",
+    bronUrl: "https://www.woonnetrijnmond.nl/?ref=2001",
     plaats: "Rotterdam",
     wijk: "Delfshaven",
     gemeente: "Rotterdam",
@@ -139,7 +139,7 @@ export const RIJNMOND_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "rijnmond-2002",
-    bronUrl: "https://demo.woonnetrijnmond.nl/aanbod/2002",
+    bronUrl: "https://www.woonnetrijnmond.nl/?ref=2002",
     plaats: "Schiedam",
     wijk: "Nieuwland",
     gemeente: "Schiedam",
@@ -161,7 +161,7 @@ export const RIJNMOND_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "rijnmond-2003",
-    bronUrl: "https://demo.woonnetrijnmond.nl/aanbod/2003",
+    bronUrl: "https://www.woonnetrijnmond.nl/?ref=2003",
     plaats: "Rotterdam",
     wijk: "Kralingen",
     gemeente: "Rotterdam",
@@ -184,7 +184,7 @@ export const RIJNMOND_TESTDATA: NormalizedListing[] = [
   },
   {
     externalId: "rijnmond-2004",
-    bronUrl: "https://demo.woonnetrijnmond.nl/aanbod/2004",
+    bronUrl: "https://www.woonnetrijnmond.nl/?ref=2004",
     plaats: "Rotterdam",
     wijk: "IJsselmonde",
     gemeente: "Rotterdam",
@@ -215,7 +215,7 @@ export const JSON_FEED_TESTDATA = {
   woningen: [
     {
       id: "wm-3001",
-      url: "https://demo.woonmatch.nl/woning/3001",
+      url: "https://www.woonmatchnhn.nl/?ref=3001",
       stad: "Alkmaar",
       buurt: "Overdie",
       gemeente: "Alkmaar",

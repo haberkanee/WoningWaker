@@ -30,7 +30,7 @@ const VOORBEELD_MAIL: InboundEmail = {
     "Kamers: 2",
     "Model: loting",
     "Sluit: 2 dagen",
-    "Link: https://demo.woonkeus.nl/woning/4001",
+    "Link: https://www.hureninhollandrijnland.nl/?ref=4001",
   ].join("\n"),
 };
 

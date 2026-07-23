@@ -26,7 +26,7 @@ export default function VoorwaardenPage() {
             </section>
             <section>
               <h2 className="text-lg font-semibold text-foreground">4. Abonnementen</h2>
-              <p>Betaalde pakketten worden maandelijks vooraf gefactureerd via Stripe en zijn maandelijks opzegbaar. Bij opzegging loopt je toegang door tot het einde van de betaalde periode.</p>
+              <p>Betaalde pakketten worden maandelijks vooraf geïncasseerd via onze betaaldienstverlener (Mollie) en zijn maandelijks opzegbaar. Bij opzegging loopt je toegang door tot het einde van de betaalde periode.</p>
             </section>
             <section>
               <h2 className="text-lg font-semibold text-foreground">5. Aansprakelijkheid</h2>

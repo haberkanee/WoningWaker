@@ -6,19 +6,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
-import { upgradePlan, saveTelegram, deleteAccount } from "./actions";
+import { upgradePlan, saveTelegram, deleteAccount, opzeggenAbonnement } from "./actions";
 import { NotificatieVoorkeuren } from "./notificatie-voorkeuren";
 
 export const metadata: Metadata = { title: "Instellingen" };
 export const dynamic = "force-dynamic";
 
-export default async function InstellingenPage({ searchParams }: { searchParams: { upgrade?: string } }) {
+export default async function InstellingenPage({
+  searchParams,
+}: {
+  searchParams: { upgrade?: string; betaling?: string };
+}) {
   const user = await requireUser();
-  const [dbUser, prefs] = await Promise.all([
+  const [dbUser, prefs, subscription] = await Promise.all([
     prisma.user.findUnique({ where: { id: user.id }, select: { plan: true, telegramChatId: true, email: true } }),
     prisma.notificationPreference.findMany({ where: { userId: user.id } }),
+    prisma.subscription.findUnique({ where: { userId: user.id } }),
   ]);
   const huidigPlan = planConfig(dbUser?.plan ?? "GRATIS");
+  const heeftBetaaldAbonnement = huidigPlan.key !== "GRATIS";
 
   return (
     <div className="space-y-6">
@@ -26,6 +32,13 @@ export default async function InstellingenPage({ searchParams }: { searchParams:
 
       {searchParams.upgrade === "ok" && (
         <Card className="border-success/40 bg-success/5"><CardContent className="py-4 text-sm">Je upgrade is gelukt. Bedankt!</CardContent></Card>
+      )}
+
+      {searchParams.betaling === "controle" && (
+        <Card className="border-primary/40 bg-accent/40"><CardContent className="py-4 text-sm">
+          Bedankt! We verwerken je betaling. Zodra Mollie de betaling bevestigt,
+          wordt je abonnement automatisch geactiveerd (meestal binnen een minuut).
+        </CardContent></Card>
       )}
 
       {/* Abonnement */}
@@ -55,6 +68,22 @@ export default async function InstellingenPage({ searchParams }: { searchParams:
             </div>
           ))}
         </CardContent>
+        {heeftBetaaldAbonnement && (
+          <CardContent className="border-t pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Je hebt een lopend <strong>{huidigPlan.naam}</strong>-abonnement
+                {subscription?.currentPeriodEnd
+                  ? ` — verlengt automatisch tot ${subscription.currentPeriodEnd.toLocaleDateString("nl-NL")}`
+                  : ""}
+                . Betalingen verlopen veilig via {subscription?.provider === "mollie" ? "Mollie (iDEAL/incasso)" : "de betaalprovider"}.
+              </p>
+              <form action={opzeggenAbonnement}>
+                <Button type="submit" variant="outline" size="sm">Abonnement opzeggen</Button>
+              </form>
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       {/* Notificatievoorkeuren */}

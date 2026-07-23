@@ -7,6 +7,8 @@ import { ListingCard } from "@/components/listing-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { REGIOS } from "@/lib/regios";
+import { PageHeader } from "@/components/page-header";
+import { HEADER_IMAGES } from "@/lib/images";
 import type { GeschiktheidStatus, Verdeelmodel } from "@prisma/client";
 
 export const metadata: Metadata = { title: "Woningaanbod" };
@@ -74,12 +76,11 @@ export default async function WoningenPage({ searchParams }: { searchParams: SP 
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold">Woningaanbod</h1>
-          <p className="text-muted-foreground">{items.length} woningen op basis van jouw profiel</p>
-        </div>
-      </div>
+      <PageHeader
+        titel="Woningaanbod"
+        ondertitel={`${items.length} woningen op basis van jouw profiel`}
+        image={HEADER_IMAGES.woningen}
+      />
 
       {/* Filters */}
       <Card>
