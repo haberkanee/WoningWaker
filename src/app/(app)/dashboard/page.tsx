@@ -10,6 +10,8 @@ import { GeschiktheidBadge, KansBadge } from "@/components/scores";
 import { euro, tijdTot, datum } from "@/lib/utils";
 import { berekenZoekpuntStatus, huidigeJaarMaand } from "@/lib/domain/zoekpunten";
 import { regioNaam } from "@/lib/regios";
+import { PageHeader } from "@/components/page-header";
+import { HEADER_IMAGES } from "@/lib/images";
 
 export const metadata: Metadata = { title: "Dashboard" };
 export const dynamic = "force-dynamic";
@@ -66,10 +68,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Welkom terug{user.name ? `, ${user.name.split(" ")[0]}` : ""}</h1>
-        <p className="text-muted-foreground">Dit is wat er vandaag speelt in jouw woningzoektocht.</p>
-      </div>
+      <PageHeader
+        titel={`Welkom terug${user.name ? `, ${user.name.split(" ")[0]}` : ""}`}
+        ondertitel="Dit is wat er vandaag speelt in jouw woningzoektocht."
+        image={HEADER_IMAGES.dashboard}
+      />
 
       {/* Kerncijfers */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

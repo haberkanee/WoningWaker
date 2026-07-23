@@ -7,6 +7,7 @@ import { GeschiktheidBadge, KansBadge } from "@/components/scores";
 import { euro, tijdTot, datum } from "@/lib/utils";
 import { verdeelmodelInfo } from "@/lib/domain/verdeelmodellen";
 import { toggleFavorite, toggleHidden } from "@/app/(app)/woningen/actions";
+import { woningFoto } from "@/lib/images";
 import { Heart, EyeOff, ExternalLink } from "lucide-react";
 
 export function ListingCard({
@@ -23,8 +24,19 @@ export function ListingCard({
   const hideAction = toggleHidden.bind(null, listing.id);
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-4">
+    <Card className="overflow-hidden transition-shadow hover:shadow-md sm:flex">
+      {/* Thumbnail (foto met gradient-fallback) */}
+      <Link
+        href={`/woningen/${listing.id}`}
+        className="bg-hero-fallback relative block h-40 shrink-0 bg-cover bg-center sm:h-auto sm:w-52"
+        style={{ backgroundImage: `linear-gradient(120deg, hsl(214 48% 18% / 0.15), transparent), url('${woningFoto(listing.woningtype)}')` }}
+        aria-hidden
+      >
+        <span className="absolute left-2 top-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-semibold text-foreground shadow-sm">
+          {euro(listing.huurprijs)}
+        </span>
+      </Link>
+      <CardContent className="flex-1 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">

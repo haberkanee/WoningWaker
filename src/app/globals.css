@@ -2,53 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * WoningWaker — warme, redactionele identiteit.
+ * Diep marineblauw (vertrouwen) + warm amber (thuis/energie) op crème.
+ */
 :root {
-  --background: 210 40% 98%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --primary: 173 80% 30%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 20%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --accent: 173 60% 94%;
-  --accent-foreground: 173 80% 22%;
-  --destructive: 0 72% 51%;
+  --background: 36 33% 97%;
+  --foreground: 222 24% 14%;
+  --card: 40 40% 99%;
+  --card-foreground: 222 24% 14%;
+  --primary: 214 48% 24%;
+  --primary-foreground: 40 40% 98%;
+  --secondary: 34 26% 92%;
+  --secondary-foreground: 214 40% 22%;
+  --muted: 34 24% 93%;
+  --muted-foreground: 220 12% 40%;
+  --accent: 34 60% 90%;
+  --accent-foreground: 24 45% 24%;
+  --gold: 34 82% 52%;
+  --gold-foreground: 28 45% 14%;
+  --destructive: 2 68% 48%;
   --destructive-foreground: 0 0% 100%;
-  --success: 142 70% 40%;
+  --success: 152 46% 34%;
   --success-foreground: 0 0% 100%;
-  --warning: 38 92% 50%;
-  --warning-foreground: 20 40% 15%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 173 80% 30%;
-  --radius: 0.75rem;
+  --warning: 34 82% 50%;
+  --warning-foreground: 28 45% 14%;
+  --border: 34 22% 87%;
+  --input: 34 22% 85%;
+  --ring: 214 48% 30%;
+  --radius: 0.625rem;
 }
 
 .dark {
-  --background: 222 47% 8%;
-  --foreground: 210 40% 96%;
-  --card: 222 45% 11%;
-  --card-foreground: 210 40% 96%;
-  --primary: 173 70% 42%;
-  --primary-foreground: 222 47% 8%;
-  --secondary: 217 33% 17%;
-  --secondary-foreground: 210 40% 96%;
-  --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 173 40% 18%;
-  --accent-foreground: 173 70% 70%;
-  --destructive: 0 63% 45%;
+  --background: 220 28% 9%;
+  --foreground: 36 30% 94%;
+  --card: 220 25% 12%;
+  --card-foreground: 36 30% 94%;
+  --primary: 210 70% 62%;
+  --primary-foreground: 220 28% 9%;
+  --secondary: 220 20% 18%;
+  --secondary-foreground: 36 30% 94%;
+  --muted: 220 18% 18%;
+  --muted-foreground: 220 12% 66%;
+  --accent: 214 40% 20%;
+  --accent-foreground: 36 60% 82%;
+  --gold: 34 78% 56%;
+  --gold-foreground: 28 45% 12%;
+  --destructive: 2 62% 50%;
   --destructive-foreground: 0 0% 100%;
-  --success: 142 60% 45%;
+  --success: 152 42% 44%;
   --success-foreground: 0 0% 100%;
-  --warning: 38 92% 50%;
-  --warning-foreground: 20 40% 15%;
-  --border: 217 33% 20%;
-  --input: 217 33% 22%;
-  --ring: 173 70% 42%;
+  --warning: 34 78% 56%;
+  --warning-foreground: 28 45% 12%;
+  --border: 220 18% 22%;
+  --input: 220 18% 24%;
+  --ring: 210 70% 62%;
 }
 
 * {
@@ -59,4 +67,23 @@ body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Redactionele koppen: strak, met karakter. */
+h1, h2, h3, .font-display {
+  font-family: "Georgia", "Iowan Old Style", "Times New Roman", ui-serif, serif;
+  letter-spacing: -0.01em;
+}
+
+.font-sans-force {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Zachte, warme sectie-scheiders */
+.bg-hero-fallback {
+  background-image:
+    radial-gradient(1200px 500px at 15% -10%, hsl(34 82% 52% / 0.18), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, hsl(214 48% 40% / 0.25), transparent 55%),
+    linear-gradient(180deg, hsl(214 48% 20%), hsl(220 40% 14%));
 }
