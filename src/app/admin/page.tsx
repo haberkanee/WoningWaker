@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { datum } from "@/lib/utils";
-import { triggerSync } from "./actions";
+import { triggerSync, leegAanbod } from "./actions";
 
 export const metadata: Metadata = { title: "Admin" };
 export const dynamic = "force-dynamic";
@@ -23,12 +23,21 @@ export default async function AdminPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Adminomgeving</h1>
-        <form action={triggerSync}>
-          <Button type="submit">Sync connectors nu</Button>
-        </form>
+        <div className="flex gap-2">
+          <form action={leegAanbod}>
+            <Button type="submit" variant="outline">Leeg het aanbod (wis demodata)</Button>
+          </form>
+          <form action={triggerSync}>
+            <Button type="submit">Sync connectors nu</Button>
+          </form>
+        </div>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Zie je nog oude demodata? Klik op <strong>Leeg het aanbod</strong> — dat verwijdert alle
+        woningen. Met demodata uit (standaard) komt er alleen echte data terug via de e-mailkoppeling.
+      </p>
 
       <div className="grid gap-4 sm:grid-cols-4">
         <Stat label="Gebruikers" value={users} />
