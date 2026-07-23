@@ -48,7 +48,7 @@ export default function PrijzenPage() {
           ))}
         </div>
         <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-muted-foreground">
-          Prijzen zijn inclusief btw. Maandelijks opzegbaar. Betaling via Stripe.
+          Prijzen zijn inclusief btw. Maandelijks opzegbaar. Betaling via Mollie — iDEAL, creditcard of automatische incasso.
         </p>
       </main>
       <MarketingFooter />

@@ -526,9 +526,12 @@ model Subscription {
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan                 Plan     @default(GRATIS)
   status               SubscriptionStatus @default(ACTIVE)
+  provider             String?  // "mollie" | "stripe"
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripePriceId        String?
+  mollieCustomerId     String?
+  mollieSubscriptionId String?
   currentPeriodEnd     DateTime?
   cancelAtPeriodEnd    Boolean  @default(false)
   createdAt            DateTime @default(now())

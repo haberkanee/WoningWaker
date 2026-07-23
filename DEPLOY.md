@@ -85,10 +85,27 @@ betreffende functie is uit.
 | Pushmeldingen | `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` — genereer met `npx web-push generate-vapid-keys` |
 | E-mail (Resend) | `RESEND_API_KEY`, `EMAIL_FROM` |
 | Telegram | `TELEGRAM_BOT_TOKEN` |
-| Abonnementen (Stripe) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_WAKER`, `STRIPE_PRICE_WAKER_PLUS` |
+| Betalingen (Mollie, aanbevolen) | `MOLLIE_API_KEY` |
+| Betalingen (Stripe, alternatief) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_WAKER`, `STRIPE_PRICE_WAKER_PLUS` |
 
-Zonder Stripe-keys werken de upgradeknoppen in *demo-modus* (ze schakelen het plan
+Zonder betaal-keys werken de upgradeknoppen in *demo-modus* (ze schakelen het plan
 direct om), zodat je alle pakket-functies kunt testen.
+
+### Mollie instellen (iDEAL, geld naar je eigen rekening)
+
+1. Maak een account op [mollie.com](https://www.mollie.com) en rond de onboarding
+   af (bankrekening = waar je uitbetaling heen gaat). Activeer iDEAL en
+   *Recurring payments / SEPA-incasso*.
+2. Kopieer je API-key (Dashboard → Developers → API-keys). Gebruik `test_…` om te
+   testen en `live_…` voor echt geld.
+3. Zet in Vercel de variabele `MOLLIE_API_KEY` en **Redeploy**.
+4. Klaar: de upgradeknop opent nu een Mollie-betaalpagina (iDEAL/creditcard). Na
+   de eerste betaling maakt WoningWaker automatisch een maandabonnement aan en
+   int Mollie elke maand. De webhook `/api/mollie/webhook` verwerkt dit —
+   die moet publiek bereikbaar zijn (op Vercel automatisch het geval).
+
+> Let op: Mollie accepteert geen `localhost`-webhook. Test betalingen daarom op je
+> Vercel-URL, niet lokaal. Lokaal blijft de demo-modus actief.
 
 Voeg variabelen toe via **Vercel → Project → Settings → Environment Variables** en
 klik daarna **Redeploy**.
