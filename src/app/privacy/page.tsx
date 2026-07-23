@@ -42,7 +42,40 @@ export default function PrivacyPage() {
               <p>Wij gebruiken veilige authenticatie, versleutelde verbindingen, versleuteling van gevoelige velden en auditlogs. Wachtwoorden en gevoelige gegevens komen nooit in onze logbestanden.</p>
             </section>
             <section>
-              <h2 className="text-lg font-semibold text-foreground">8. Contact</h2>
+              <h2 className="text-lg font-semibold text-foreground">8. Google-gebruikersdata (Gmail-koppeling)</h2>
+              <p>
+                Als je ervoor kiest je Gmail te koppelen, vraagt WoningWaker via Google
+                uitsluitend <strong>alleen-lezen toegang tot je e-mail</strong> (scope{" "}
+                <code>gmail.readonly</code>). We gebruiken die toegang alléén om
+                <strong> woningalerts van woningplatforms</strong> te herkennen en om te
+                zetten in woningen in je overzicht. We lezen, bewaren of verwerken je
+                overige e-mail niet.
+              </p>
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                <li>We slaan de inhoud van je e-mails niet op — alleen de daaruit afgeleide woninggegevens (plaats, prijs, link, e.d.).</li>
+                <li>Je toegangstoken wordt versleuteld opgeslagen en uitsluitend gebruikt om nieuwe alerts op te halen.</li>
+                <li>Er kijken geen medewerkers mee in je mailbox; het verwerken gebeurt geautomatiseerd.</li>
+                <li>We verkopen of delen deze gegevens niet en gebruiken ze niet voor advertenties.</li>
+                <li>Je kunt de koppeling op elk moment verbreken via <em>Koppelingen → Ontkoppelen</em>; daarmee wordt het token direct verwijderd.</li>
+              </ul>
+              <p className="mt-3">
+                WoningWaker&apos;s gebruik en overdracht van informatie die is ontvangen via
+                Google API&apos;s voldoet aan het{" "}
+                <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" className="underline">
+                  Google API Services User Data Policy
+                </a>, inclusief de Limited Use-vereisten.
+              </p>
+              <p className="mt-2 text-xs">
+                <em>
+                  WoningWaker&apos;s use and transfer of information received from Google APIs to
+                  any other app will adhere to the Google API Services User Data Policy,
+                  including the Limited Use requirements.
+                </em>
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-lg font-semibold text-foreground">9. Contact</h2>
               <p>Vragen over privacy? Mail naar privacy@woningwaker.nl.</p>
             </section>
           </div>
