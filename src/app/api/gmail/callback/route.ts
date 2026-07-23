@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { exchangeCode, gmailEmailAddress } from "@/lib/google";
+import { exchangeCode, gmailEmailAddress, baseUrlFromRequest } from "@/lib/google";
 import { encrypt } from "@/lib/crypto";
 import { audit } from "@/lib/audit";
-import { APP_URL } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
 /** Google stuurt de gebruiker hierheen terug; we bewaren de Gmail-toegang. */
 export async function GET(req: Request) {
+  const base = baseUrlFromRequest(req);
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.redirect(`${APP_URL}/login?callbackUrl=/koppelingen`);
+    return NextResponse.redirect(`${base}/login?callbackUrl=/koppelingen`);
   }
 
   const url = new URL(req.url);
@@ -26,14 +26,14 @@ export async function GET(req: Request) {
     ?.split("=")[1];
 
   if (url.searchParams.get("error") || !code || !state || state !== cookieState) {
-    return NextResponse.redirect(`${APP_URL}/koppelingen?gmail=mislukt`);
+    return NextResponse.redirect(`${base}/koppelingen?gmail=mislukt`);
   }
 
   try {
-    const tokens = await exchangeCode(code);
+    const tokens = await exchangeCode(code, base);
     if (!tokens.refresh_token) {
       // Geen refresh token (al eerder toestemming gegeven) → vraag opnieuw met prompt=consent.
-      return NextResponse.redirect(`${APP_URL}/koppelingen?gmail=herhaal`);
+      return NextResponse.redirect(`${base}/koppelingen?gmail=herhaal`);
     }
     const email = await gmailEmailAddress(tokens.access_token);
     await prisma.user.update({
@@ -46,10 +46,10 @@ export async function GET(req: Request) {
     });
     await audit({ userId: session.user.id, actie: "gmail.gekoppeld", metadata: { email } });
   } catch {
-    return NextResponse.redirect(`${APP_URL}/koppelingen?gmail=mislukt`);
+    return NextResponse.redirect(`${base}/koppelingen?gmail=mislukt`);
   }
 
-  const res = NextResponse.redirect(`${APP_URL}/koppelingen?gmail=verbonden`);
+  const res = NextResponse.redirect(`${base}/koppelingen?gmail=verbonden`);
   res.cookies.delete("gmail_oauth_state");
   return res;
 }

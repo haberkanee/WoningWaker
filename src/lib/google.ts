@@ -15,18 +15,27 @@ export function googleConfigured(): boolean {
   return !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
 }
 
-export function gmailRedirectUri(): string {
-  return `${APP_URL}/api/gmail/callback`;
+/** Basis-URL uit de binnenkomende request (Vercel-proxyheaders), val terug op APP_URL. */
+export function baseUrlFromRequest(req: Request): string {
+  const h = req.headers;
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  return host ? `${proto}://${host}` : APP_URL;
 }
 
-export function gmailAuthUrl(state: string): string {
+export function gmailRedirectUri(baseUrl: string): string {
+  return `${baseUrl}/api/gmail/callback`;
+}
+
+export function gmailAuthUrl(state: string, baseUrl: string): string {
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID!,
-    redirect_uri: gmailRedirectUri(),
+    redirect_uri: gmailRedirectUri(baseUrl),
     response_type: "code",
     scope: GMAIL_SCOPES.join(" "),
     access_type: "offline",
-    prompt: "consent",
+    // Accountkiezer + toestemming (nodig voor een refresh token).
+    prompt: "select_account consent",
     include_granted_scopes: "true",
     state,
   });
@@ -40,7 +49,7 @@ interface TokenResp {
   id_token?: string;
 }
 
-export async function exchangeCode(code: string): Promise<TokenResp> {
+export async function exchangeCode(code: string, baseUrl: string): Promise<TokenResp> {
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -48,7 +57,7 @@ export async function exchangeCode(code: string): Promise<TokenResp> {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirect_uri: gmailRedirectUri(),
+      redirect_uri: gmailRedirectUri(baseUrl),
       grant_type: "authorization_code",
     }),
   });
