@@ -114,7 +114,31 @@ bots). In plaats daarvan stuur je de **officiële e-mailalerts** van de platform
 door; wij zetten ze om in echte woningen met de echte advertentielink en foto.
 Standaard staat demodata **uit** (`DEMO_DATA` niet gezet).
 
-### Methode 1 — Gmail (aanbevolen, werkt met een gewoon Gmail-account)
+### Methode 0 — "Inloggen met Google" + "Koppel met Gmail" (aanbevolen)
+
+De makkelijkste UX: gebruikers klikken op **Inloggen met Google** en op
+**Koppel met Gmail**, en klaar. Eenmalige setup door jou (gratis):
+
+1. Ga naar [Google Cloud Console](https://console.cloud.google.com) → maak een project.
+2. **API's en services → OAuth-toestemmingsscherm**: kies *Extern*, vul de basis in.
+   Voeg jezelf toe als *testgebruiker*. Voeg de scope
+   `.../auth/gmail.readonly` toe.
+3. **Inloggegevens → OAuth-client-ID maken** (type *Webtoepassing*). Zet als
+   **Geautoriseerde redirect-URI's**:
+   - `https://<jouw-vercel-url>/api/auth/callback/google`
+   - `https://<jouw-vercel-url>/api/gmail/callback`
+4. Kopieer de **client-ID** en het **client-secret** en zet in Vercel:
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, en `APP_URL` = je Vercel-URL → **Redeploy**.
+
+> Let op: `gmail.readonly` is een *restricted scope*. In *testmodus* werkt het
+> meteen voor jezelf en tot 100 testgebruikers (Google vraagt pas een
+> verificatie als je het openbaar maakt voor veel gebruikers). Voor eigen
+> gebruik en testen is testmodus prima.
+
+Daarna: gebruikers gaan naar **Koppelingen → Koppel met Gmail**, loggen in, en de
+woningalerts worden automatisch opgehaald (dagelijkse cron + knop *Nu ophalen*).
+
+### Methode 1 — Gmail via Apps Script (zonder Google-client, handmatig)
 
 **Geen extra account, domein of env-variabele nodig** — alleen je gedeployde app.
 Elke gebruiker regelt het zelf in de app onder **Koppelingen**:

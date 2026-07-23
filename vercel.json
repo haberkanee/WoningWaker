@@ -6,10 +6,17 @@
     {
       "path": "/api/connectors/sync",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/gmail/poll",
+      "schedule": "0 7 * * *"
     }
   ],
   "functions": {
     "src/app/api/connectors/sync/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/gmail/poll/route.ts": {
       "maxDuration": 60
     }
   }

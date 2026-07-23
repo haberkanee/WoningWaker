@@ -1,9 +1,24 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { bootstrapUser } from "@/lib/user-bootstrap";
+
+/** Is "Inloggen met Google" geconfigureerd? */
+export const googleEnabled = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
+
+const googleProvider = googleEnabled
+  ? [
+      Google({
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        allowDangerousEmailAccountLinking: true,
+      }),
+    ]
+  : [];
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -17,7 +32,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   trustHost: true,
+  events: {
+    async createUser({ user }) {
+      if (user.id) await bootstrapUser(user.id, user.email);
+    },
+  },
   providers: [
+    ...googleProvider,
     Credentials({
       credentials: {
         email: { label: "E-mail", type: "email" },

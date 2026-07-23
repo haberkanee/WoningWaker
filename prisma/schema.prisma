@@ -157,6 +157,11 @@ model User {
   telegramChatId        String?
   // Persoonlijk token voor de e-mailkoppeling (doorstuuradres met +token)
   inboundToken          String?  @unique
+  // Gmail-koppeling (OAuth). Refresh token versleuteld opgeslagen.
+  gmailRefreshToken     String?  @db.Text
+  gmailEmail            String?
+  gmailConnectedAt      DateTime?
+  gmailLastSyncAt       DateTime?
 }
 
 model Account {
